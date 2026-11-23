@@ -1,0 +1,10 @@
+Item,Value
+Farms,6
+Farms per elevation,2
+Sampling occasions,12
+Days between occasions,14-16
+First / last sampling day,0 / 167
+Trees per farm x condition x occasion,2
+Trees per occasion,24
+Total trees sampled,288
+Repeated unit (farm x condition),12

@@ -1,0 +1,22 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+~$*
+.~lock.*#
+
+# Not published --------------------------------------------------------------
+# Field data: available from the corresponding author on request
+Data/raw_data/*
+!Data/raw_data/README.md
+Data/tidy_data/*
+# Fitted models (the rds files contain the data)
+Outputs/models/
+# Manuscript, editorial correspondence and superseded material
+Documents/
+Editor_comments_and_Manuscrip_versions/
+Supplementary_Material/
+Garbage_Scripts/
+Outputs/old_version/
+Figures/
