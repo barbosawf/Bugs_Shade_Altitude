@@ -105,6 +105,10 @@ cld_tbl <- function(em) {
 # processes (PSOCK cluster), so it also works in Positron, RStudio and on Windows.
 pb_lrt <- function(m0, m1, data, response, nsim = 1000,
                    cores = max(1, parallel::detectCores() - 2)) {
+  # Evaluate the arguments here: unevaluated arguments (lazy evaluation) would be
+  # sent to the workers as references to objects that do not exist there
+  force(data)
+  force(response)
   obs <- as.numeric(2 * (logLik(m1) - logLik(m0)))
   sims <- simulate(m0, nsim = nsim)
 
