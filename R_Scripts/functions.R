@@ -100,19 +100,29 @@ cld_tbl <- function(em) {
 # Parametric bootstrap of the likelihood-ratio test between two nested fitted
 # models: responses are simulated from m0, both models are refitted to each
 # simulated data set, and the observed LR is compared with the simulated LRs.
-# Call set.seed() before it for reproducible results.
+# Call set.seed() before it for reproducible results. The simulations are made in
+# this R session; the refits, which are deterministic, run in parallel in new R
+# processes (PSOCK cluster), so it also works in Positron, RStudio and on Windows.
 pb_lrt <- function(m0, m1, data, response, nsim = 1000,
                    cores = max(1, parallel::detectCores() - 2)) {
   obs <- as.numeric(2 * (logLik(m1) - logLik(m0)))
   sims <- simulate(m0, nsim = nsim)
-  lr <- unlist(parallel::mclapply(seq_len(nsim), function(i) {
+
+  # LR statistic for one simulated response vector y
+  refit_lr <- function(y) {
     dd <- data
-    dd[[response]] <- sims[[i]]
+    dd[[response]] <- y
     a <- try(suppressWarnings(update(m0, data = dd)), silent = TRUE)
     b <- try(suppressWarnings(update(m1, data = dd)), silent = TRUE)
     if (inherits(a, "try-error") || inherits(b, "try-error")) return(NA_real_)
     max(0, as.numeric(2 * (logLik(b) - logLik(a))))
-  }, mc.cores = cores))
+  }
+
+  cl <- parallel::makeCluster(cores)
+  on.exit(parallel::stopCluster(cl), add = TRUE)
+  parallel::clusterEvalQ(cl, loadNamespace("glmmTMB"))
+  lr <- unlist(parallel::parLapply(cl, sims, refit_lr))
+
   tibble::tibble(LR_chisq = obs,
          df = attr(logLik(m1), "df") - attr(logLik(m0), "df"),
          P_asymptotic = pchisq(obs, df, lower.tail = FALSE),

@@ -58,7 +58,7 @@ effects of time, time², elevation and shading were retained.
 3. Run `source("R_Scripts/run_all.R")`.
 
 Required packages: tidyverse, here, readxl, glmmTMB, emmeans, multcomp,
-multcompView, DHARMa, patchwork and svglite. The parametric bootstrap uses
-`parallel::mclapply` (forked processes, so it runs in parallel on Linux and macOS
-only); set `run_bootstrap <- FALSE` in `01_Monalonion.R` and
+multcompView, DHARMa, patchwork and svglite. The parametric bootstrap runs in
+parallel on a PSOCK cluster (`parallel::makeCluster`), which works on any operating
+system and IDE; set `run_bootstrap <- FALSE` in `01_Monalonion.R` and
 `03_Sensitivity_Monalonion.R` to skip it.
