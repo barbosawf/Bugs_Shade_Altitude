@@ -1,15 +1,17 @@
 Data,Term,LR_chisq,df,P,Model
-Days 46-167 (main analysis),sT,0.03736424826320217,1,0.8467253262684606,A
-Days 46-167 (main analysis),I(sT^2),72.6311532173844,1,1.5629233243706538e-17,A
-Days 46-167 (main analysis),Altitude,22.903705429866477,2,1.0629762429353194e-5,A
-Days 46-167 (main analysis),Condition,31.467021815921953,1,2.0285645538035318e-8,A
-Days 46-167 (main analysis),sT:Altitude,14.1146652207118,2,8.610718475760876e-4,A
-Days 46-167 (main analysis),Altitude:Condition,15.216267407244572,2,4.96397419228835e-4,A
-Days 46-167 (main analysis),Three-way block (Time + Time^2) x Elevation x Shading,10.505668876009167,4,0.032718992248269796,B vs two-way
-All occasions (days 0-167),sT,126.15551823635019,1,2.84306887232462e-29,A
-All occasions (days 0-167),I(sT^2),142.0609417144392,1,9.430964193530906e-33,A
-All occasions (days 0-167),Altitude,23.241213856280638,2,8.979135694234884e-6,A
-All occasions (days 0-167),Condition,31.938975321573253,1,1.5909274366340196e-8,A
-All occasions (days 0-167),sT:Altitude,16.56395511802225,2,2.5303631069249966e-4,A
-All occasions (days 0-167),Altitude:Condition,14.669695894834376,2,6.524030922529966e-4,A
-All occasions (days 0-167),Three-way block (Time + Time^2) x Elevation x Shading,9.499775377352307,4,0.04975186311844342,B vs two-way
+Days 46-167 (main analysis),sT,0.05316832874314059,1,0.817639097817543,Final
+Days 46-167 (main analysis),I(sT^2),72.63115321738576,1,1.562923324369573e-17,Final
+Days 46-167 (main analysis),Altitude,22.903705429867614,2,1.0629762429347152e-5,Final
+Days 46-167 (main analysis),Condition,31.791726521670057,1,1.716222503369666e-8,Final
+Days 46-167 (main analysis),sT:Altitude,14.2359744336718,2,8.103962626009552e-4,Final
+Days 46-167 (main analysis),I(sT^2):Altitude,7.863550749203796,2,0.01960882861539977,Final
+Days 46-167 (main analysis),Altitude:Condition,15.461779765431174,2,4.3905323732194477e-4,Final
+Days 46-167 (main analysis),Three-way block (Time + Time^2) x Elevation x Shading,10.505668876009167,4,0.032718992248269796,Full vs two-way
+All occasions (days 0-167),sT,126.86736576286307,1,1.9861333913775504e-29,Final
+All occasions (days 0-167),I(sT^2),142.06094171443783,1,9.430964193537383e-33,Final
+All occasions (days 0-167),Altitude,23.241213856280865,2,8.979135694233864e-6,Final
+All occasions (days 0-167),Condition,32.19938210113651,1,1.3913499686442191e-8,Final
+All occasions (days 0-167),sT:Altitude,20.665393125015044,2,3.2551192224244315e-5,Final
+All occasions (days 0-167),I(sT^2):Altitude,5.06017659467625,2,0.0796519869169676,Final
+All occasions (days 0-167),Altitude:Condition,14.770399351884407,2,6.203667789159841e-4,Final
+All occasions (days 0-167),Three-way block (Time + Time^2) x Elevation x Shading,9.499775377352307,4,0.04975186311844342,Full vs two-way

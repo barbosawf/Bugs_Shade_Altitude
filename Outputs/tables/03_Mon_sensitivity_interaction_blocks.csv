@@ -1,7 +1,7 @@
 Data,Test,LR_chisq,df,P_asymptotic,P_bootstrap,n_sim_ok
 Days 46-167 (main analysis),Three-way: Time(linear+quadratic) x Elevation x Shading (vs all two-way),10.505668876009167,4,0.032718992248269796,0.04972972972972973,924
-Days 46-167 (main analysis),Three-way: Time(linear) x Elevation x Shading (vs Model A),6.678562083978704,3,0.08288029355954693,0.0988056460369164,920
-Days 46-167 (main analysis),Quadratic time x Elevation and x Shading (vs Model A),8.171889547706542,4,0.0854807593354727,0.10491803278688525,914
+Days 46-167 (main analysis),Three-way: Time(linear) x Elevation x Shading (step 3),5.798619410913943,2,0.05506121539743155,0.06140350877192982,911
+Days 46-167 (main analysis),Quadratic time x Elevation (final model),7.863550749203796,2,0.01960882861539977,0.03271537622682661,916
 All occasions (days 0-167),Three-way: Time(linear+quadratic) x Elevation x Shading (vs all two-way),9.499775377352307,4,0.04975186311844342,0.09021739130434783,919
-All occasions (days 0-167),Three-way: Time(linear) x Elevation x Shading (vs Model A),6.323342741004126,3,0.0968959314896236,0.11643090315560392,918
-All occasions (days 0-167),Quadratic time x Elevation and x Shading (vs Model A),5.379566917707962,4,0.25052020932559277,0.2942453854505972,920
+All occasions (days 0-167),Three-way: Time(linear) x Elevation x Shading (step 3),5.523301381860392,2,0.06318737939231726,0.06201550387596899,902
+All occasions (days 0-167),Quadratic time x Elevation (final model),5.06017659467625,2,0.0796519869169676,0.0782608695652174,919

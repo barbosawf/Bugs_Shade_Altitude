@@ -1,7 +1,7 @@
 Time,Altitude,Days 46-167 (main analysis),All occasions (days 0-167)
 46,High,a,a
-46,Medium,b,b
-46,Low,b,b
+46,Low,a,b
+46,Medium,a,b
 61,High,a,a
 61,Medium,b,b
 61,Low,b,b
@@ -25,4 +25,4 @@ Time,Altitude,Days 46-167 (main analysis),All occasions (days 0-167)
 153,Low,c,c
 167,High,a,a
 167,Medium,b,b
-167,Low,c,c
+167,Low,b,b

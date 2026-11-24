@@ -6,8 +6,9 @@
 #   Plot  - farm x shading condition (group of trees observed on every occasion)
 #   Event - farm x sampling date
 # Fixed effects are tested by Type II likelihood-ratio tests (each term is tested
-# against the model with all terms that do not contain it). Non-significant
-# interactions are removed (final model: main effects of time, time^2, elevation
+# against the model with all terms that do not contain it). The final model was
+# selected by backward elimination with LRTs (section 3), as for Monalonion; all
+# interactions were removed (final model: main effects of time, time^2, elevation
 # and shading).
 
 source(here::here("R_Scripts", "functions.R"))
@@ -104,17 +105,84 @@ lrt_full <- dplyr::bind_rows(
 readr::write_csv(lrt_full, file.path(dir_tables, "02_Ant_LRT_full_model.csv"))
 print(lrt_full)
 
+# 3. Backward elimination by likelihood-ratio tests -----------------------------------
+# Same procedure as for Monalonion: at each step, every term that is not contained
+# in a higher-order term is tested by an LRT; the term with the largest P is removed
+# if P > 0.05. Main effects are kept while they are part of an interaction.
+
+# Step 1: full model
+step1 <- dplyr::bind_rows(
+  lrt_row("sT:Altitude:Condition", m_no3lin, m_full),
+  lrt_row("I(sT^2):Altitude:Condition", m_no3quad, m_full)
+) |> dplyr::mutate(Step = 1, .before = 1)
+stopifnot(step1$Term[which.max(step1$P)] == "I(sT^2):Altitude:Condition", max(step1$P) > 0.05)
+m_s1 <- m_no3quad # I(sT^2):Altitude:Condition removed
+
+# Step 2
+step2 <- dplyr::bind_rows(
+  lrt_row("sT:Altitude:Condition", update(m_s1, . ~ . - sT:Altitude:Condition), m_s1),
+  lrt_row("I(sT^2):Altitude", update(m_s1, . ~ . - I(sT^2):Altitude), m_s1),
+  lrt_row("I(sT^2):Condition", update(m_s1, . ~ . - I(sT^2):Condition), m_s1)
+) |> dplyr::mutate(Step = 2, .before = 1)
+stopifnot(step2$Term[which.max(step2$P)] == "I(sT^2):Altitude", max(step2$P) > 0.05)
+m_s2 <- update(m_s1, . ~ . - I(sT^2):Altitude)
+
+# Step 3
+step3 <- dplyr::bind_rows(
+  lrt_row("sT:Altitude:Condition", update(m_s2, . ~ . - sT:Altitude:Condition), m_s2),
+  lrt_row("I(sT^2):Condition", update(m_s2, . ~ . - I(sT^2):Condition), m_s2)
+) |> dplyr::mutate(Step = 3, .before = 1)
+stopifnot(step3$Term[which.max(step3$P)] == "I(sT^2):Condition", max(step3$P) > 0.05)
+m_s3 <- update(m_s2, . ~ . - I(sT^2):Condition)
+
+# Step 4
+step4 <- lrt_row("sT:Altitude:Condition", update(m_s3, . ~ . - sT:Altitude:Condition), m_s3) |>
+  dplyr::mutate(Step = 4, .before = 1)
+stopifnot(step4$P > 0.05)
+m_s4 <- update(m_s3, . ~ . - sT:Altitude:Condition)
+
+# Step 5
+step5 <- dplyr::bind_rows(
+  lrt_row("sT:Altitude", update(m_s4, . ~ . - sT:Altitude), m_s4),
+  lrt_row("sT:Condition", update(m_s4, . ~ . - sT:Condition), m_s4),
+  lrt_row("Altitude:Condition", update(m_s4, . ~ . - Altitude:Condition), m_s4)
+) |> dplyr::mutate(Step = 5, .before = 1)
+stopifnot(step5$Term[which.max(step5$P)] == "sT:Altitude", max(step5$P) > 0.05)
+m_s5 <- update(m_s4, . ~ . - sT:Altitude)
+
+# Step 6
+step6 <- dplyr::bind_rows(
+  lrt_row("sT:Condition", update(m_s5, . ~ . - sT:Condition), m_s5),
+  lrt_row("Altitude:Condition", update(m_s5, . ~ . - Altitude:Condition), m_s5)
+) |> dplyr::mutate(Step = 6, .before = 1)
+stopifnot(step6$Term[which.max(step6$P)] == "Altitude:Condition", max(step6$P) > 0.05)
+m_s6 <- update(m_s5, . ~ . - Altitude:Condition)
+
+# Step 7: the last interaction is removed; only main effects remain
+step7 <- lrt_row("sT:Condition", update(m_s6, . ~ . - sT:Condition), m_s6) |>
+  dplyr::mutate(Step = 7, .before = 1)
+stopifnot(step7$P > 0.05)
+
+tab_steps <- dplyr::bind_rows(step1, step2, step3, step4, step5, step6, step7) |>
+  dplyr::group_by(Step) |>
+  dplyr::mutate(Removed = P == max(P) & P > 0.05) |>
+  dplyr::ungroup()
+readr::write_csv(tab_steps, file.path(dir_tables, "02_Ant_backward_elimination.csv"))
+print(tab_steps, n = Inf)
+
 # All interactions jointly: main-effects model vs full model
 m_main <- glmmTMB::glmmTMB(Antiteuchus ~ sT + I(sT^2) + Altitude + Condition +
                     (1 | Farm) + (1 | Plot) + (1 | Event),
                   family = glmmTMB::nbinom1(), data = dA)
+# m_main is the model reached in step 7
+stopifnot(abs(logLik(m_main) - logLik(update(m_s6, . ~ . - sT:Condition))) < 1e-6)
 tab_int <- lrt_row("All interactions jointly (vs main-effects model)", m_main, m_full) |>
   dplyr::rename(Test = Term) |>
   dplyr::mutate(AIC_main = AIC(m_main), AIC_full = AIC(m_full))
 readr::write_csv(tab_int, file.path(dir_tables, "02_Ant_all_interactions_test.csv"))
 print(tab_int)
 
-# 3. Final model: sT + sT^2 + Altitude + Condition -----------------------------------
+# 4. Final model: sT + sT^2 + Altitude + Condition -----------------------------------
 
 saveRDS(m_main, file.path(dir_models, "Ant_model_final.rds"))
 

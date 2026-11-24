@@ -26,8 +26,8 @@ Data/
 R_Scripts/
   functions.R                    packages, folders, colors and helpers that format/save results
   00_Data_Preparation.R          tidy data, design summary, descriptive tables
-  01_Monalonion.R                Monalonion: NB GLMMs, interaction tests and final model
-  02_Antiteuchus.R               Antiteuchus: NB GLMMs and final (main-effects) model
+  01_Monalonion.R                Monalonion: NB GLMMs, backward elimination and final model
+  02_Antiteuchus.R               Antiteuchus: NB GLMMs, backward elimination and final model
   03_Sensitivity_Monalonion.R    Monalonion with all 12 sampling occasions
   run_all.R                      runs everything in order
 Outputs/
@@ -41,15 +41,16 @@ Outputs/
 
 Tree-level counts were modeled with negative binomial (NB1) GLMMs (`glmmTMB`) with
 random intercepts for farm, shading condition within farm and sampling date within
-farm. Fixed effects were tested by type II likelihood-ratio tests, and the three-way
-interaction for *Monalonion* was also tested by parametric bootstrap. Residuals were
-checked with `DHARMa`, and Tukey comparisons were made with `emmeans`.
+farm. Fixed effects were selected by backward elimination with likelihood-ratio tests
+(the same procedure for both species), and the critical tests for *Monalonion* were
+also checked by parametric bootstrap. Residuals were checked with `DHARMa`, and Tukey
+comparisons were made with `emmeans`.
 
-For *Monalonion* (days 46–167) the final model is Time × Elevation +
-Elevation × Shading + Time². The three-way interaction (Time + Time²) × Elevation ×
-Shading received only weak support (parametric bootstrap P = 0.050; P = 0.090 with
-all sampling occasions) and was not retained. For *Antiteuchus* only the main
-effects of time, time², elevation and shading were retained.
+For *Monalonion* (days 46–167) the final model is (Time + Time²) × Elevation +
+Elevation × Shading. The three-way interaction (Time + Time²) × Elevation × Shading
+received only weak support (parametric bootstrap P = 0.050; P = 0.090 with all
+sampling occasions) and was not retained. For *Antiteuchus* all interactions were
+removed, leaving the main effects of time, time², elevation and shading.
 
 ## How to run
 

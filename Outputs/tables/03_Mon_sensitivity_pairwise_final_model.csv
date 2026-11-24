@@ -1,0 +1,19 @@
+Data,Altitude,Condition,response,SE,df,asymp.LCL,asymp.UCL,.group,Comparison,contrast,ratio,null,z.ratio,p.value
+Days 46-167 (main analysis),High,Shaded,65.56447997564595,5.551327395685748,Inf,55.53894280422402,77.39976343499899,a,Elevation within shading,NA,NA,NA,NA,NA
+Days 46-167 (main analysis),Medium,Shaded,17.015909235759786,2.0985076621220076,Inf,13.362253195368591,21.668588589533034,b,Elevation within shading,NA,NA,NA,NA,NA
+Days 46-167 (main analysis),Low,Shaded,6.529516994872462,1.1099021910881557,Inf,4.679418383361071,9.111087894582594,c,Elevation within shading,NA,NA,NA,NA,NA
+Days 46-167 (main analysis),High,Unshaded,19.02140968043699,2.1014511610804565,Inf,15.31804999050144,23.62011003067486,a,Elevation within shading,NA,NA,NA,NA,NA
+Days 46-167 (main analysis),Medium,Unshaded,2.070912572962869,0.5260669932030475,Inf,1.2587337712243043,3.407137381151152,b,Elevation within shading,NA,NA,NA,NA,NA
+Days 46-167 (main analysis),Low,Unshaded,0.8152797722401548,0.2702450325389812,Inf,0.4257498054603582,1.561201199622973,b,Elevation within shading,NA,NA,NA,NA,NA
+Days 46-167 (main analysis),High,NA,NA,0.3318012310326516,Inf,NA,NA,NA,Shaded vs unshaded within elevation,Shaded / Unshaded,3.4468780746085947,1,12.855300323713381,8.031333463576598e-38
+Days 46-167 (main analysis),Medium,NA,NA,2.0411797790933055,Inf,NA,NA,NA,Shaded vs unshaded within elevation,Shaded / Unshaded,8.21662365563555,1,8.478194394477153,2.2871559628028903e-17
+Days 46-167 (main analysis),Low,NA,NA,2.6272046216194562,Inf,NA,NA,NA,Shaded vs unshaded within elevation,Shaded / Unshaded,8.008927998950865,1,6.342494386292335,2.2607445031926868e-10
+All occasions (days 0-167),High,Shaded,68.07305818065703,5.767327912504029,Inf,57.65795514092805,80.36950389136761,a,Elevation within shading,NA,NA,NA,NA,NA
+All occasions (days 0-167),Medium,Shaded,18.222538390368715,2.197974167278837,Inf,14.385940871192545,23.082321021727854,b,Elevation within shading,NA,NA,NA,NA,NA
+All occasions (days 0-167),Low,Shaded,7.61593421589139,1.1849497981071802,Inf,5.614178728565516,10.33142277527838,c,Elevation within shading,NA,NA,NA,NA,NA
+All occasions (days 0-167),High,Unshaded,19.75022443863901,2.20681637031773,Inf,15.865799128174597,24.58567401650271,a,Elevation within shading,NA,NA,NA,NA,NA
+All occasions (days 0-167),Medium,Unshaded,2.2719660485172293,0.5725959965290638,Inf,1.3863610939294222,3.72329384329778,b,Elevation within shading,NA,NA,NA,NA,NA
+All occasions (days 0-167),Low,Unshaded,0.9613471145541247,0.31283593160005235,Inf,0.5080274985162391,1.819169783841927,b,Elevation within shading,NA,NA,NA,NA,NA
+All occasions (days 0-167),High,NA,NA,0.3410097205118919,Inf,NA,NA,NA,Shaded vs unshaded within elevation,Shaded / Unshaded,3.446697954858681,1,12.506979151987437,6.837537482400056e-36
+All occasions (days 0-167),Medium,NA,NA,2.0103563996995253,Inf,NA,NA,NA,Shaded vs unshaded within elevation,Shaded / Unshaded,8.020603301823735,1,8.30649008689326,9.857446001271543e-17
+All occasions (days 0-167),Low,NA,NA,2.6169624934647056,Inf,NA,NA,NA,Shaded vs unshaded within elevation,Shaded / Unshaded,7.922148098841157,1,6.265344665070679,3.720016672310348e-10

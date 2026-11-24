@@ -30,43 +30,46 @@ for (nm in names(sets)) {
   time_scale <- sd(d$Time)
   d <- d |> dplyr::mutate(sT = (Time - time_center) / time_scale)
 
-  # Model A: Time x Elevation + Elevation x Shading + Time^2
-  mA <- glmmTMB::glmmTMB(Monalonion ~ sT * Altitude + Altitude * Condition + I(sT^2) +
-                  (1 | Farm) + (1 | Plot) + (1 | Event),
-                family = glmmTMB::nbinom1(), data = d)
+  # Final model: (Time + Time^2) x Elevation + Elevation x Shading
+  m_final <- glmmTMB::glmmTMB(Monalonion ~ (sT + I(sT^2)) * Altitude + Altitude * Condition +
+                                (1 | Farm) + (1 | Plot) + (1 | Event),
+                              family = glmmTMB::nbinom1(), data = d)
   # All two-way interactions (linear and quadratic time)
   m_2way <- glmmTMB::glmmTMB(Monalonion ~ (sT + I(sT^2)) * (Altitude + Condition) + Altitude:Condition +
                       (1 | Farm) + (1 | Plot) + (1 | Event),
                     family = glmmTMB::nbinom1(), data = d)
-  # Model B: (Time + Time^2) x Elevation x Shading
-  mB <- glmmTMB::glmmTMB(Monalonion ~ (sT + I(sT^2)) * Altitude * Condition +
+  # Full model: (Time + Time^2) x Elevation x Shading
+  m_full <- glmmTMB::glmmTMB(Monalonion ~ (sT + I(sT^2)) * Altitude * Condition +
                   (1 | Farm) + (1 | Plot) + (1 | Event),
                 family = glmmTMB::nbinom1(), data = d)
-  # Model A plus Time(linear) x Shading and Time(linear) x Elevation x Shading
-  mA_3lin <- update(mA, . ~ . + sT:Condition + sT:Altitude:Condition)
+  # Models of steps 2 and 3 of the backward elimination in 01_Monalonion.R
+  m_s2 <- update(m_full, . ~ . - I(sT^2):Altitude:Condition - I(sT^2):Condition)
+  m_s3 <- update(m_s2, . ~ . - sT:Altitude:Condition)
 
-  # Type II LRT of Model A and test of the three-way block
-  mA_noTA <- update(mA, . ~ . - sT:Altitude)
-  mA_noAC <- update(mA, . ~ . - Altitude:Condition)
-  mA_noTA_AC <- update(mA, . ~ . - sT:Altitude - Altitude:Condition)
+  # Type II LRT of the final model and test of the three-way block
+  m_noTA <- update(m_final, . ~ . - sT:Altitude)
+  m_noQA <- update(m_final, . ~ . - I(sT^2):Altitude)
+  m_noAC <- update(m_final, . ~ . - Altitude:Condition)
+  m_noAlt <- update(m_final, . ~ . - sT:Altitude - I(sT^2):Altitude - Altitude:Condition)
   lrt[[nm]] <- dplyr::bind_rows(
-    lrt_row("sT", update(mA_noTA, . ~ . - sT), mA_noTA),
-    lrt_row("I(sT^2)", update(mA, . ~ . - I(sT^2)), mA),
-    lrt_row("Altitude", update(mA_noTA_AC, . ~ . - Altitude), mA_noTA_AC),
-    lrt_row("Condition", update(mA_noAC, . ~ . - Condition), mA_noAC),
-    lrt_row("sT:Altitude", mA_noTA, mA),
-    lrt_row("Altitude:Condition", mA_noAC, mA)
+    lrt_row("sT", update(m_noTA, . ~ . - sT), m_noTA),
+    lrt_row("I(sT^2)", update(m_noQA, . ~ . - I(sT^2)), m_noQA),
+    lrt_row("Altitude", update(m_noAlt, . ~ . - Altitude), m_noAlt),
+    lrt_row("Condition", update(m_noAC, . ~ . - Condition), m_noAC),
+    lrt_row("sT:Altitude", m_noTA, m_final),
+    lrt_row("I(sT^2):Altitude", m_noQA, m_final),
+    lrt_row("Altitude:Condition", m_noAC, m_final)
   ) |>
-    dplyr::mutate(Model = "A") |>
-    dplyr::bind_rows(lrt_row("Three-way block (Time + Time^2) x Elevation x Shading", m_2way, mB) |>
-                dplyr::mutate(Model = "B vs two-way")) |>
+    dplyr::mutate(Model = "Final") |>
+    dplyr::bind_rows(lrt_row("Three-way block (Time + Time^2) x Elevation x Shading", m_2way, m_full) |>
+                dplyr::mutate(Model = "Full vs two-way")) |>
     dplyr::mutate(Data = nm, .before = 1)
 
-  # Interaction blocks, with parametric bootstrap (same tests as 01_Monalonion.R)
+  # Critical tests, with parametric bootstrap (same tests as 01_Monalonion.R)
   block_pairs <- list(
-    `Three-way: Time(linear+quadratic) x Elevation x Shading (vs all two-way)` = list(m_2way, mB),
-    `Three-way: Time(linear) x Elevation x Shading (vs Model A)` = list(mA, mA_3lin),
-    `Quadratic time x Elevation and x Shading (vs Model A)` = list(mA, m_2way)
+    `Three-way: Time(linear+quadratic) x Elevation x Shading (vs all two-way)` = list(m_2way, m_full),
+    `Three-way: Time(linear) x Elevation x Shading (step 3)` = list(m_s3, m_s2),
+    `Quadratic time x Elevation (final model)` = list(m_noQA, m_final)
   )
   blocks[[nm]] <- purrr::imap_dfr(block_pairs, function(p, tn) {
     if (run_bootstrap) {
@@ -78,27 +81,27 @@ for (nm in names(sets)) {
   }) |>
     dplyr::mutate(Data = nm, .before = 1)
 
-  # Pairwise comparisons (Model A), at the same day in both data sets
+  # Pairwise comparisons (final model), at the same day in both data sets
   sT_ref <- (day_ref - time_center) / time_scale
   tukey[[nm]] <- dplyr::bind_rows(
-    cld_tbl(emmeans::emmeans(mA, ~ Altitude | Condition, at = list(sT = sT_ref), type = "response")) |>
+    cld_tbl(emmeans::emmeans(m_final, ~ Altitude | Condition, at = list(sT = sT_ref), type = "response")) |>
       dplyr::mutate(Comparison = "Elevation within shading"),
-    emmeans::contrast(emmeans::emmeans(mA, ~ Condition | Altitude, at = list(sT = sT_ref)), "pairwise") |>
+    emmeans::contrast(emmeans::emmeans(m_final, ~ Condition | Altitude, at = list(sT = sT_ref)), "pairwise") |>
       summary(type = "response") |>
       tibble::as_tibble() |>
       dplyr::mutate(Comparison = "Shaded vs unshaded within elevation")
   ) |>
     dplyr::mutate(Data = nm, .before = 1)
 
-  # Elevation comparisons per sampling day (Model A)
-  per_day[[nm]] <- cld_tbl(emmeans::emmeans(mA, ~ Altitude | sT,
+  # Elevation comparisons per sampling day (final model)
+  per_day[[nm]] <- cld_tbl(emmeans::emmeans(m_final, ~ Altitude | sT,
                                    at = list(sT = (days_main - time_center) / time_scale),
                                    type = "response")) |>
     dplyr::mutate(Time = round(sT * time_scale + time_center), Data = nm)
 
-  # Fitted curves (Model A)
+  # Fitted curves (final model)
   grid_days <- seq(min(d$Time), 167, 1)
-  curves[[nm]] <- emmeans::emmeans(mA, ~ Altitude * Condition * sT,
+  curves[[nm]] <- emmeans::emmeans(m_final, ~ Altitude * Condition * sT,
                           at = list(sT = (grid_days - time_center) / time_scale),
                           type = "response") |>
     tibble::as_tibble() |>
@@ -117,12 +120,12 @@ readr::write_csv(blocks, file.path(dir_tables, "03_Mon_sensitivity_interaction_b
 print(blocks, width = Inf)
 
 tukey <- dplyr::bind_rows(tukey)
-readr::write_csv(tukey, file.path(dir_tables, "03_Mon_sensitivity_pairwise_modelA.csv"))
+readr::write_csv(tukey, file.path(dir_tables, "03_Mon_sensitivity_pairwise_final_model.csv"))
 
 letters_cmp <- dplyr::bind_rows(per_day) |>
   dplyr::select(Data, Time, Altitude, .group) |>
   tidyr::pivot_wider(names_from = Data, values_from = .group)
-readr::write_csv(letters_cmp, file.path(dir_tables, "03_Mon_sensitivity_letters_per_day_modelA.csv"))
+readr::write_csv(letters_cmp, file.path(dir_tables, "03_Mon_sensitivity_letters_per_day_final_model.csv"))
 print(letters_cmp, n = Inf)
 
 curves <- dplyr::bind_rows(curves)
@@ -131,7 +134,7 @@ peaks <- curves |>
   dplyr::slice_max(Predicted, n = 1) |>
   dplyr::ungroup() |>
   dplyr::select(Data, Altitude, Condition, Time, Predicted, Lower, Upper)
-readr::write_csv(peaks, file.path(dir_tables, "03_Mon_sensitivity_peaks_modelA.csv"))
+readr::write_csv(peaks, file.path(dir_tables, "03_Mon_sensitivity_peaks_final_model.csv"))
 print(peaks, n = Inf)
 
 # Figure S6 -------------------------------------------------------------------------------
@@ -150,6 +153,6 @@ fig_s <- ggplot2::ggplot(curves, ggplot2::aes(Time, Predicted, colour = Data, fi
   ggplot2::scale_colour_manual(values = set_cols) +
   ggplot2::scale_fill_manual(values = set_cols) +
   ggplot2::labs(x = "Time (days)", y = "Number of Monalonion per tree", colour = NULL, fill = NULL,
-       caption = "Model A (NB1 GLMM). Points: observed mean (± SE) per day.") +
+       caption = "Final model (NB1 GLMM). Points: observed mean (± SE) per day.") +
   theme_bugs()
 save_fig(fig_s, "S6_Monalonion_sensitivity_all_occasions", 11, 6.5)
