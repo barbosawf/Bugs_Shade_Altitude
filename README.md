@@ -41,9 +41,10 @@ Outputs/
 
 Tree-level counts were modeled with negative binomial (NB1) GLMMs (`glmmTMB`) with
 random intercepts for farm, shading condition within farm and sampling date within
-farm. Fixed effects were selected by backward elimination with likelihood-ratio tests
-(the same procedure for both species), and the critical tests for *Monalonion* were
-also checked by parametric bootstrap. Residuals were checked with `DHARMa`, and Tukey
+farm. The main effects of time (linear and quadratic), elevation and
+shading were kept in all models, and non-significant interactions were removed by backward
+elimination with likelihood-ratio tests (the same procedure for both species); the
+critical tests for *Monalonion* were also checked by parametric bootstrap. Residuals were checked with `DHARMa`, and Tukey
 comparisons were made with `emmeans`.
 
 For *Monalonion* (days 46–167) the final model is (Time + Time²) × Elevation +

@@ -106,9 +106,11 @@ readr::write_csv(lrt_full, file.path(dir_tables, "02_Ant_LRT_full_model.csv"))
 print(lrt_full)
 
 # 3. Backward elimination by likelihood-ratio tests -----------------------------------
-# Same procedure as for Monalonion: at each step, every term that is not contained
-# in a higher-order term is tested by an LRT; the term with the largest P is removed
-# if P > 0.05. Main effects are kept while they are part of an interaction.
+# Same procedure as for Monalonion. The main effects (sT, I(sT^2), Altitude,
+# Condition) are kept in all models; only interactions are candidates for
+# removal. At each step, every
+# interaction that is not contained in a higher-order interaction is tested by an
+# LRT (model with vs without it); the one with the largest P is removed if P > 0.05.
 
 # Step 1: full model
 step1 <- dplyr::bind_rows(
