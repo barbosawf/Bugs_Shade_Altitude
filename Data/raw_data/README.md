@@ -1,7 +1,6 @@
 # Raw data
 
-The field data are not distributed with this repository. They are available from
-the corresponding author on reasonable request.
+The field data are not distributed with this repository.
 
 To run the analysis, place the spreadsheet in this folder as
 

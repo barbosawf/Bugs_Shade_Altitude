@@ -6,9 +6,8 @@ the abundance of the cacao pest bugs *Monalonion* (Miridae) and *Antiteuchus*
 
 ## Data
 
-The field data are not included in this repository; they are available from the
-corresponding author on reasonable request. To run the analysis, place the
-spreadsheet in
+The field data are not included in this repository. To run the analysis, place
+the spreadsheet in
 
 ```
 Data/raw_data/Dados_Percevejos_Antiteuchus_Monalonion.xlsx
